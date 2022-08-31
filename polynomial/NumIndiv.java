@@ -2,7 +2,8 @@ package polynomial;
 
 /**
  * NumIndiv holds any individual number who is a rational number so that it
- * can be divided into a numerator and denominator. NaN is a special NumIndiv whose denomiator is zero.
+ * can be divided into a numerator and denominator. NaN is a special NumIndiv
+ * whose denomiator is zero. NaN is considered a positive number.
  *
  */
 public final class NumIndiv extends Number implements Comparable<NumIndiv> {
@@ -58,9 +59,45 @@ public final class NumIndiv extends Number implements Comparable<NumIndiv> {
         }
     }
 
+    /**
+     * Checks if the NumIndiv is not a number
+     */
+    public boolean isNaN() {
+        return denominator == 0;
+    }
+
+    /**
+     * Checks if the NumIndiv is negative.
+     */
+    public boolean isNegativeNumber() {
+        if (isNaN()) {
+            return false;
+        }
+        return numerator < 0;
+    }
+
+    /**
+     * Checks if the NumIndiv is a positive number
+     */
+    public boolean isPositiveNumber() {
+        if (isNaN()) {
+            return true;
+        }
+        return numerator > 0;
+    }
+
     @Override
-    public int compareTo(NumIndiv o) {
-        return 0;
+    public int compareTo(NumIndiv comp) {
+        if (this.isNaN() && comp.isNaN()) {
+            return 0;
+        } else if (this.isNaN()) {
+            return 1;
+        } else if (comp.isNaN()) {
+            return -1;
+        }
+
+        NumIndiv curr = this.subtract(comp);
+        return curr.numerator;
     }
 
     @Override
@@ -70,16 +107,22 @@ public final class NumIndiv extends Number implements Comparable<NumIndiv> {
 
     @Override
     public long longValue() {
-        return 0;
+        return intValue();
     }
 
     @Override
     public float floatValue() {
-        return 0;
+        if (isNaN()) {
+            return Float.NaN;
+        }
+        return ((float) numerator) / ((float) denominator);
     }
 
     @Override
     public double doubleValue() {
-        return 0;
+        if (isNaN()) {
+            return Double.NaN;
+        }
+        return ((double) numerator) / ((double) denominator);
     }
 }
