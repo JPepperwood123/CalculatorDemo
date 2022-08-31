@@ -14,7 +14,7 @@ public final class NumIndiv extends Number implements Comparable<NumIndiv> {
     private final int numerator, denominator;
 
     public static final NumIndiv NaN = new NumIndiv(1, 0);
-
+    public static final NumIndiv negNaN = new NumIndiv(-1, 0);
     public static final NumIndiv zero = new NumIndiv(0);
 
     /**
@@ -86,30 +86,42 @@ public final class NumIndiv extends Number implements Comparable<NumIndiv> {
         return numerator > 0;
     }
 
+    /**
+     * Compares two NumIndiv and checks if it this is greater than "comp"
+     */
     @Override
-    public int compareTo(NumIndiv comp) {
-        if (this.isNaN() && comp.isNaN()) {
+    public int compareTo(NumIndiv argument) {
+        if (this.isNaN() && argument.isNaN()) {
             return 0;
         } else if (this.isNaN()) {
             return 1;
-        } else if (comp.isNaN()) {
+        } else if (argument.isNaN()) {
             return -1;
         }
 
-        NumIndiv curr = this.subtract(comp);
+        NumIndiv curr = this.subtraction(argument);
         return curr.numerator;
     }
 
+    /**
+     * Approximates value to an integer
+     */
     @Override
     public int intValue() {
-        return 0;
+        return numerator / denominator;
     }
 
+    /**
+     * Approximates value to a long value
+     */
     @Override
     public long longValue() {
         return intValue();
     }
 
+    /**
+     * Approximates value to a float value
+     */
     @Override
     public float floatValue() {
         if (isNaN()) {
@@ -118,11 +130,89 @@ public final class NumIndiv extends Number implements Comparable<NumIndiv> {
         return ((float) numerator) / ((float) denominator);
     }
 
+    /**
+     * Approximates value to a double value
+     */
     @Override
     public double doubleValue() {
         if (isNaN()) {
             return Double.NaN;
         }
         return ((double) numerator) / ((double) denominator);
+    }
+
+    /**
+     * Returns the negation of the current NumIndiv
+     */
+    public NumIndiv negate() {
+        return new NumIndiv(-numerator, denominator);
+    }
+
+    /**
+     * Returns the sum of two NumIndiv
+     */
+    public NumIndiv addition(NumIndiv argument) {
+        if (argument.isNaN()) {
+            return NaN;
+        }
+
+        // Can directly do the operation as constructor does GCD while initializing
+        return new NumIndiv((this.numerator * argument.denominator) + (argument.numerator * this.denominator),
+                                this.denominator * argument.denominator);
+    }
+
+    /**
+     * Returns the difference of two NumIndiv
+     */
+    public NumIndiv subtraction(NumIndiv argument) {
+        if (argument.isNaN()) {
+            return negNaN;
+        }
+
+        // Adding the negation of one is the subtraction of the numbers
+        NumIndiv argNeg = argument.negate();
+        return this.addition(argNeg);
+    }
+
+    /**
+     * Returns the product of two NumIndiv
+     */
+    public NumIndiv multiplication(NumIndiv argument) {
+        if (argument.isNaN()) {
+            return NaN;
+        }
+
+        // Can directly do the operation as constructor does GCD while initializing
+        return new NumIndiv(this.numerator * argument.numerator, this.denominator * argument.denominator);
+    }
+
+    /**
+     * Returns the division of two NumIndiv
+     */
+    public NumIndiv division(NumIndiv argument) {
+        if (argument.isNaN()) {
+            return zero;
+        }
+
+        // Can directly do the operation as constructor does GCD while initializing
+        return new NumIndiv(this.numerator * argument.denominator, this.denominator * argument.numerator);
+    }
+
+
+    /**
+     * Returns the greatest common divisor of 'a' and 'b'.
+     */
+    private static int gcd(int first, int second) {
+        // Euclid's method
+        if(second == 0) {
+            return 0;
+        }
+
+        while (second != 0) {
+            int tmp = second;
+            second = first % second;
+            first = tmp;
+        }
+        return first;
     }
 }
