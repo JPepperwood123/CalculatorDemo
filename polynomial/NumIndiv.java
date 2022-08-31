@@ -198,6 +198,71 @@ public final class NumIndiv extends Number implements Comparable<NumIndiv> {
         return new NumIndiv(this.numerator * argument.denominator, this.denominator * argument.numerator);
     }
 
+    /**
+     * Returns the hashCode of this specific NumIndiv
+     */
+    @Override
+    public int hashCode() {
+        if(isNaN()) {
+            return -1;
+        }
+
+        int result = 1;
+        int currGcd = gcd(numerator, denominator);
+        result = 31 * result + (numerator ^ currGcd);
+        result = 31 * result + (currGcd ^ denominator);
+
+        return result;
+    }
+
+    /**
+     * Equality operation.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof NumIndiv) {
+            NumIndiv ni = (NumIndiv) obj;
+
+            // Check if both are NaN
+            if(this.isNaN() && ni.isNaN()) {
+                return true;
+            } else {
+                return (this.numerator == ni.numerator) && (this.denominator == ni.denominator);
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the String representation of NumIndiv
+     */
+    @Override
+    public String toString() {
+        if(isNaN()) {
+            return "NaN";
+        }
+
+        if (denominator != 1) {
+            return numerator + "/" + denominator;
+        } else {
+            return numerator + "";
+        }
+    }
+
+    public static NumIndiv valueOf(String numStr) {
+        if(numStr.equals("NaN")) {
+            // NaN case
+            return new NumIndiv(1, 0);
+        } else if(numStr.indexOf('/') == -1) {
+            // Integer case
+            return new NumIndiv(Integer.parseInt(numStr));
+        } else {
+            int currentNumerator = Integer.parseInt(numStr.substring(0, numStr.indexOf('/')));
+            int currentDenominator = Integer.parseInt(numStr.substring(numStr.indexOf('/') + 1));
+            return new NumIndiv(currentNumerator, currentDenominator);
+        }
+    }
 
     /**
      * Returns the greatest common divisor of 'a' and 'b'.
