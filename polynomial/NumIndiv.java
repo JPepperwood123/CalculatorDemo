@@ -13,9 +13,9 @@ public final class NumIndiv extends Number implements Comparable<NumIndiv> {
 
     private final int numerator, denominator;
 
-    public static final NumIndiv NaN = new NumIndiv(1, 0);
-    public static final NumIndiv negNaN = new NumIndiv(-1, 0);
-    public static final NumIndiv zero = new NumIndiv(0);
+    public static final NumIndiv NAN = new NumIndiv(1, 0);
+    public static final NumIndiv NEGNAN = new NumIndiv(-1, 0);
+    public static final NumIndiv ZERO = new NumIndiv(0);
 
     /**
      * Constructor with numerator value only
@@ -153,7 +153,7 @@ public final class NumIndiv extends Number implements Comparable<NumIndiv> {
      */
     public NumIndiv addition(NumIndiv argument) {
         if (argument.isNaN()) {
-            return NaN;
+            return NAN;
         }
 
         // Can directly do the operation as constructor does GCD while initializing
@@ -166,7 +166,7 @@ public final class NumIndiv extends Number implements Comparable<NumIndiv> {
      */
     public NumIndiv subtraction(NumIndiv argument) {
         if (argument.isNaN()) {
-            return negNaN;
+            return NEGNAN;
         }
 
         // Adding the negation of one is the subtraction of the numbers
@@ -179,7 +179,7 @@ public final class NumIndiv extends Number implements Comparable<NumIndiv> {
      */
     public NumIndiv multiplication(NumIndiv argument) {
         if (argument.isNaN()) {
-            return NaN;
+            return NAN;
         }
 
         // Can directly do the operation as constructor does GCD while initializing
@@ -191,7 +191,7 @@ public final class NumIndiv extends Number implements Comparable<NumIndiv> {
      */
     public NumIndiv division(NumIndiv argument) {
         if (argument.isNaN()) {
-            return zero;
+            return ZERO;
         }
 
         // Can directly do the operation as constructor does GCD while initializing
