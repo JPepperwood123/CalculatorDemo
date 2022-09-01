@@ -250,10 +250,13 @@ public final class NumIndiv extends Number implements Comparable<NumIndiv> {
         }
     }
 
+    /**
+     * Returns a NumIndiv given a string representing the value
+     */
     public static NumIndiv valueOf(String numStr) {
         if(numStr.equals("NaN")) {
             // NaN case
-            return new NumIndiv(1, 0);
+            return NAN;
         } else if(numStr.indexOf('/') == -1) {
             // Integer case
             return new NumIndiv(Integer.parseInt(numStr));

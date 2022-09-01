@@ -197,8 +197,39 @@ public class TermCalc {
             return "NaN";
         }
 
-        return coefficient.toString() + "x^" + exponent;
+        String result = "";
+        NumIndiv tempCoefficent = coefficient;
+
+        if(tempCoefficent.isNegativeNumber()) {
+            result += "-";
+            tempCoefficent = tempCoefficent.negate();
+        }
+
+        if(tempCoefficent.equals(ONE) && exponent == 1) {
+            result += "x";
+        } else if(exponent == 0) {
+            result += tempCoefficent.toString();
+        } else if(tempCoefficent.equals(ONE)) {
+            result += "x^" + exponent;
+        } else if(exponent == 1) {
+            result += tempCoefficent + "*x";
+        } else {
+            result += tempCoefficent + "*x^" + exponent;
+        }
+        return result;
     }
 
+    /**
+     * Returns a TermCalc given a string representing the value
+     */
+    public static TermCalc valueOf(String termStr) {
+        if(termStr.equals("NaN")) {
+            // NaN case
+            return NaN;
+        }
+
+        int multiplicationLocation = termStr.indexOf("*");
+        NumIndiv currentCoefficient= null;
+    }
 
 }
