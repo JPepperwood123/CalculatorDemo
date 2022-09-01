@@ -133,4 +133,72 @@ public class TermCalc {
         return new TermCalc(this.coefficient.division(argument.getCoeff()), this.exponent - argument.getExpt());
     }
 
+    /**
+     * Return the derivative of this TermCalc.
+    */
+    public TermCalc differentiation() {
+        if(isNaN()) {
+            return NaN;
+        }
+        return new TermCalc(coefficient.multiplication(new NumIndiv(exponent)), exponent - 1);
+    }
+
+    /**
+     * Return the derivative of this TermCalc.
+     */
+    public TermCalc antiDifferentiation() {
+        if(isNaN()) {
+            return NaN;
+        }
+        return new TermCalc(coefficient.division(new NumIndiv(exponent + 1)), exponent + 1);
+    }
+
+    /**
+     * Returns the hashCode of this specific TermCalc
+     */
+    @Override
+    public int hashCode() {
+        if(isNaN()) {
+            return -1;
+        }
+
+        int result = 1;
+        result = 31 * result + coefficient.hashCode();
+        result = 31 * result + (exponent * 47);
+
+        return result;
+    }
+
+    /**
+     * Equality operation.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof TermCalc) {
+            TermCalc tc = (TermCalc) obj;
+
+            // Check if both are NaN
+            if(this.isNaN() && tc.isNaN()) {
+                return true;
+            } else {
+                return this.coefficient.equals(tc.getCoeff()) && (this.exponent == tc.getExpt());
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the String representation of TermCalc
+     */
+    @Override
+    public String toString() {
+        if(isNaN()) {
+            return "NaN";
+        }
+
+        return coefficient.toString() + "x^" + exponent;
+    }
+
+
 }
