@@ -228,8 +228,51 @@ public class TermCalc {
             return NaN;
         }
 
-        int multiplicationLocation = termStr.indexOf("*");
-        NumIndiv currentCoefficient= null;
-    }
+        // A TermCalc is either of the form A*x^B or A*x or x^B or A or x, where A is a NumIndiv
+        // and B is an integer
 
+        int multiplicationLocation = termStr.indexOf("*");
+        int powerLocation = termStr.indexOf("^");
+        int xLocation = termStr.indexOf("x");
+        NumIndiv currentCoefficient;
+
+        if (multiplicationLocation == -1) {
+            // Forms x^B or A or x
+            if (xLocation == -1) {
+                // Form A only
+                currentCoefficient = NumIndiv.valueOf(termStr);
+            } else {
+                if (termStr.indexOf("-") == 0) {
+                    // -x^B or -x means coefficeient -1
+                    currentCoefficient = new NumIndiv(-1);
+                } else if (termStr.indexOf("-") == 1) {
+                    // -x^B or -x means coefficient 1
+                    currentCoefficient = new NumIndiv(1);
+                } else {
+                    throw new RuntimeException("Incorrect format of \"-\" sign");
+                }
+            }
+        } else {
+            // Forms A*x^B or A*x
+            currentCoefficient = NumIndiv.valueOf(termStr.substring(0, multiplicationLocation));
+        }
+
+        int currentExponent;
+
+        if (powerLocation == -1) {
+            // Forms A*x or A or x
+            if (xLocation == -1) {
+                // Form A
+                currentExponent = 0;
+            } else {
+                // Forms A*x or x
+                currentExponent = 1;
+            }
+        } else {
+            // Forms A*x^B or x^B
+            currentExponent = Integer.parseInt(termStr.substring(powerLocation + 1));
+        }
+
+        return new TermCalc(currentCoefficient, currentExponent);
+    }
 }
