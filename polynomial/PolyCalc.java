@@ -132,60 +132,40 @@ public class PolyCalc {
         if(isNaN()) {
             return PolyCalc.NaN;
         }
-        List<TermCalc> newTerms = new ArrayList<>(listOfTerms);
+        List<TermCalc> newTerms = new ArrayList<>(this.listOfTerms);
         scaleCoeff(newTerms, new NumIndiv(-1));
-        RatPoly res = new RatPoly(newTerms);
+
         checkRep();
-        return res;
+        return new PolyCalc(newTerms);
     }
 
     /**
-     * Addition operation.
-     *
-     * @param p the other value to be added
-     * @return a RatPoly, r, such that r = "this + p"; if this.isNaN() or p.isNaN(), returns some r
-     * such that r.isNaN()
-     * @spec.requires p != null
+     * Returns the sum of two PolyCalcs
      */
-    public RatPoly add(RatPoly p) {
+    public PolyCalc add(PolyCalc p) {
         checkRep();
         if (this.isNaN() || p.isNaN()) {
-            // Returning new object which shows that either polynomial was NaN
-            return NaN;
+            return PolyCalc.NaN;
         }
-        // Stores result of the addition between the polynomials
-        List<RatTerm> result = new ArrayList<>();
 
-        // {{Inv : result = result + the RatTerms from positions 0 to position i in this.terms, where i is the
-        //         position of the RatTerm in this.terms}}
-        for (RatTerm newTerm : this.terms) {
-            // All terms from this added
+        // First adding all terms in the current list
+        List<TermCalc> result = new ArrayList<>(this.listOfTerms);
+
+        // Next all terms from p are added using "sortedInsert"
+        for (TermCalc newTerm : p.listOfTerms) {
             sortedInsert(result, newTerm);
         }
 
-        // {{Inv : result = result + the RatTerms from positions 0 to position i in p.terms, where i is the
-        //         position of the RatTerm in p.terms}}
-        for (RatTerm newTerm : p.terms) {
-            // All terms from p added
-            sortedInsert(result, newTerm);
-        }
         checkRep();
-        return new RatPoly(result);
+        return new PolyCalc(result);
     }
 
     /**
-     * Subtraction operation.
-     *
-     * @param p the value to be subtracted
-     * @return a RatPoly, r, such that r = "this - p"; if this.isNaN() or p.isNaN(), returns some r
-     * such that r.isNaN()
-     * @spec.requires p != null
+     * Returns the difference of two PolyCalcs
      */
-    public RatPoly sub(RatPoly p) {
+    public PolyCalc sub(PolyCalc p) {
         checkRep();
-        RatPoly res = this.add(p.negate());
-        checkRep();
-        return res;
+        return this.add(p.negate());
     }
 
     /**
