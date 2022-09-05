@@ -166,6 +166,7 @@ public class TermCalc {
         result = 31 * result + coefficient.hashCode();
         result = 31 * result + (exponent * 47);
 
+        checkRep();
         return result;
     }
 
@@ -216,6 +217,7 @@ public class TermCalc {
         } else {
             result += tempCoefficent + "*x^" + exponent;
         }
+        checkRep();
         return result;
     }
 

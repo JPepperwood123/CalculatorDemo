@@ -100,6 +100,7 @@ public final class NumIndiv extends Number implements Comparable<NumIndiv> {
         }
 
         NumIndiv curr = this.subtraction(argument);
+        checkRepInv();
         return curr.numerator;
     }
 
@@ -212,6 +213,7 @@ public final class NumIndiv extends Number implements Comparable<NumIndiv> {
         result = 31 * result + (numerator ^ currGcd);
         result = 31 * result + (currGcd ^ denominator);
 
+        checkRepInv();
         return result;
     }
 
