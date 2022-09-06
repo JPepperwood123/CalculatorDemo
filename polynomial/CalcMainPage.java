@@ -1,16 +1,11 @@
 package polynomial;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
+import javax.swing.border.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 /**
  * CalcMainPage is the main page for this pro graphical calculator as it starts the calculator.
@@ -19,7 +14,7 @@ public class CalcMainPage extends JFrame {
     /**
      * The stack of polynomials being manipulated by this calculator.
      */
-    RatPolyStack stack;
+    PolyCalcStack stack;
 
     JPanel jPanel1 = new JPanel();
 
@@ -101,7 +96,7 @@ public class CalcMainPage extends JFrame {
 
     BorderLayout borderLayout1 = new BorderLayout();
 
-    PolyGraph pg;
+    GraphingPolyCalc pg;
 
     Border border2;
 
@@ -124,19 +119,13 @@ public class CalcMainPage extends JFrame {
     JButton jButton_Clear = new JButton();
 
     /**
-     * Change this when you remove/add fields.
-     */
-    private static final long serialVersionUID = 42L;
-
-    /**
      * Logger for exceptions and errors.
      */
-    private static final Logger LOGGER = Logger.getLogger(CalculatorFrame.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(CalcMainPage.class.getName());
 
-    public CalculatorFrame() {
+    public CalcMainPage() {
         try {
-            // Student-written code that may throw an exception
-            stack = new RatPolyStack();
+            stack = new PolyCalcStack();
 
             jbInit();
             // exit the application when this window is closed
@@ -618,7 +607,7 @@ public class CalcMainPage extends JFrame {
         jPanel7.add(jButton_stack_sub, null);
         jPanel7.add(jButton_Clear, null);
 
-        pg = new PolyGraph(this);
+        pg = new GraphingPolyCalc(this);
         // pg.setBackground(Color.white);
         jPanel2.add(pg, "Center");
     }
@@ -635,7 +624,7 @@ public class CalcMainPage extends JFrame {
             LOGGER.log(Level.SEVERE, e.toString(), e);
         }
 
-        CalculatorFrame frame = new CalculatorFrame();
+        CalcMainPage frame = new CalcMainPage();
 
         // Validate frames that have preset sizes
         frame.validate();
@@ -707,35 +696,35 @@ public class CalcMainPage extends JFrame {
     }
 
     void jButton_exp_actionPerformed(ActionEvent e) {
-        if(startNewEq == true) {
+        if(startNewEq) {
             startNewEq = false;
         }
         appendToCurrentText("^");
     }
 
     void jButton_mul_actionPerformed(ActionEvent e) {
-        if(startNewEq == true) {
+        if(startNewEq) {
             startNewEq = false;
         }
         appendToCurrentText("*");
     }
 
     void jButton_div_actionPerformed(ActionEvent e) {
-        if(startNewEq == true) {
+        if(startNewEq) {
             startNewEq = false;
         }
         appendToCurrentText("/");
     }
 
     void jButton_plus_actionPerformed(ActionEvent e) {
-        if(startNewEq == true) {
+        if(startNewEq) {
             startNewEq = false;
         }
         appendToCurrentText("+");
     }
 
     void jButton_minus_actionPerformed(ActionEvent e) {
-        if(startNewEq == true) {
+        if(startNewEq) {
             startNewEq = false;
         }
         appendToCurrentText("-");
@@ -766,7 +755,7 @@ public class CalcMainPage extends JFrame {
     void jButton_pop_actionPerformed(ActionEvent e) {
         try {
             if(stack.size() > 0) {
-                RatPoly popped = stack.pop();
+                PolyCalc popped = stack.pop();
                 jTextArea_Current.setText(popped.toString());
                 startNewEq = true;
             }
@@ -782,7 +771,7 @@ public class CalcMainPage extends JFrame {
     void jButton_dup_actionPerformed(ActionEvent e) {
         try {
             if(stack.size() > 0) {
-                stack.dup();
+                stack.duplicate();
             }
             // Update displays (so that they display new stack contents).
             updateStackDisplay();
@@ -795,7 +784,7 @@ public class CalcMainPage extends JFrame {
 
     void jButton_Enter_actionPerformed(ActionEvent e) {
         String currentText = jTextArea_Current.getText();
-        RatPoly parsedRatPoly;
+        PolyCalc parsedRatPoly;
 
         startNewEq = true;
         jTextArea_Current.setText("");
@@ -804,7 +793,7 @@ public class CalcMainPage extends JFrame {
         // ultimately be student-written code.
         try {
             // Parse text to get new RatPoly and push it onto the stack.
-            parsedRatPoly = RatPoly.valueOf(currentText);
+            parsedRatPoly = PolyCalc.valueOf(currentText);
             stack.push(parsedRatPoly);
 
             // Update displays (so that they display new stack contents).
@@ -825,11 +814,9 @@ public class CalcMainPage extends JFrame {
         jTextArea_Stack_2.setText("");
         jTextArea_Stack_3.setText("");
 
-        RatPoly currentRatPoly;
+        PolyCalc currentRatPoly;
         String tempString;
 
-        // Now fill in new information base on what's in stack.
-        // Note that size of stack must be checked.
         if(stack.size() > 0) {
             currentRatPoly = stack.getNthFromTop(0);
             tempString = currentRatPoly.toString();
@@ -853,9 +840,6 @@ public class CalcMainPage extends JFrame {
             tempString = currentRatPoly.toString();
             jTextArea_Stack_3.setText(tempString);
         }
-        // Consider abstracting this better! This would require
-        // putting the text areas into an array.
-
     }
 
     void updateGraph() {
@@ -873,9 +857,9 @@ public class CalcMainPage extends JFrame {
     void jButton_stack_mul_actionPerformed(ActionEvent e) {
         try {
             if(stack.size() > 1) {
-                stack.mul();
+                stack.multiplication();
             }
-            // Update displays (so that they display new stack contents).
+
             updateStackDisplay();
             updateGraph();
         } catch(Exception e1) {
@@ -887,9 +871,9 @@ public class CalcMainPage extends JFrame {
     void jButton_stack_div_actionPerformed(ActionEvent e) {
         try {
             if(stack.size() > 1) {
-                stack.div();
+                stack.division();
             }
-            // Update displays (so that they display new stack contents).
+
             updateStackDisplay();
             updateGraph();
         } catch(Exception e1) {
@@ -927,9 +911,9 @@ public class CalcMainPage extends JFrame {
     void jButton_stack_add_actionPerformed(ActionEvent e) {
         try {
             if(stack.size() > 1) {
-                stack.add();
+                stack.addition();
             }
-            // Update displays (so that they display new stack contents).
+
             updateStackDisplay();
             updateGraph();
         } catch(Exception e1) {
@@ -941,9 +925,9 @@ public class CalcMainPage extends JFrame {
     void jButton_stack_sub_actionPerformed(ActionEvent e) {
         try {
             if(stack.size() > 1) {
-                stack.sub();
+                stack.subtraction();
             }
-            // Update displays (so that they display new stack contents).
+
             updateStackDisplay();
             updateGraph();
         } catch(Exception e1) {
@@ -957,7 +941,7 @@ public class CalcMainPage extends JFrame {
             if(stack.size() > 0) {
                 stack.clear();
             }
-            // Update displays (so that they display new stack contents).
+
             updateStackDisplay();
             updateGraph();
         } catch(Exception e1) {
