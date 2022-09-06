@@ -1,260 +1,200 @@
 package polynomial;
 
-
 import java.util.Iterator;
 import java.util.Stack;
 
 /**
- * <b>RatPolyStack</B> is a mutable finite sequence of RatPoly objects.
- *
- * <p>Each RatPolyStack can be described by [p1, p2, ... ], where [] is an empty stack, [p1] is a
- * one element stack containing the Poly 'p1', and so on. RatPolyStacks can also be described
- * constructively, with the append operation, ':'. such that [p1]:S is the result of putting p1 at
- * the front of the RatPolyStack S.
- *
- * <p>A finite sequence has an associated size, corresponding to the number of elements in the
- * sequence. Thus the size of [] is 0, the size of [p1] is 1, the size of [p1, p1] is 2, and so on.
+ * PolyCalcStack represents a mutable finite sequence of PolyCalc objects
  */
 @SuppressWarnings("JdkObsolete")
 public final class PolyCalcStack implements Iterable<PolyCalc> {
 
     /**
-     * Stack containing the RatPoly objects.
+     * Stack containing the PolyCalc objects.
      */
-    private final Stack<PolyCalc> polys;
+    private final Stack<PolyCalc> polyStack;
 
-    // Abstraction Function:
-    // AF(this) = A LIFO stack where the top of this.polys is the top of this,
-    // and the bottom of this.polys is the bottom of this (with the elements in between
-    // in insertion order, newest closer to the top).
-    //
     // RepInvariant:
-    // polys != null &&
-    // forall i such that (0 <= i < polys.size(), polys.get(i) != null
+    // polyStack != null && polys.get(i) != null for all i
 
     /**
-     * Throws an exception if the representation invariant is violated.
+     * If the representation invariant is violated, throws an exception
      */
     private void checkRep() {
-        assert (polys != null) : "polys should never be null.";
+        assert (polyStack != null);
 
-        for(RatPoly p : polys) {
-            assert (p != null) : "polys should never contain a null element.";
+        for(PolyCalc p : polyStack) {
+            assert (p != null);
         }
     }
 
     /**
-     * @spec.effects Constructs a new RatPolyStack, [].
+     * Default constructor with no terms
      */
-    public RatPolyStack() {
-        polys = new Stack<RatPoly>();
+    public PolyCalcStack() {
+        polyStack = new Stack<>();
         checkRep();
     }
 
     /**
-     * Returns the number of RatPolys in this RatPolyStack.
-     *
-     * @return the size of this sequence
+     * Returns the number of PolyCalcs in this PolyCalcStack
      */
     public int size() {
         checkRep();
-        int res = polys.size();
-        checkRep();
-        return res;
+        return polyStack.size();
     }
 
     /**
-     * Pushes a RatPoly onto the top of this.
-     *
-     * @param p the RatPoly to push onto this stack
-     * @spec.requires p != null
-     * @spec.modifies this
-     * @spec.effects this_post = [p]:this
+     * Pushes a PolyCalc onto the top of this PolyCalcStack
      */
-    public void push(RatPoly p) {
-        if (p == null) {
-            throw new IllegalArgumentException("p is required to be not null");
+    public void push(PolyCalc currPoly) {
+        if (currPoly == null) {
+            throw new IllegalArgumentException("Argument is null");
         }
         checkRep();
-        this.polys.push(p);
+        polyStack.push(currPoly);
         checkRep();
     }
 
     /**
-     * Removes and returns the top RatPoly.
-     *
-     * @return p where this = [p]:S
-     * @spec.requires {@code this.size() > 0}
-     * @spec.modifies this
-     * @spec.effects If this = [p]:S then this_post = S
+     * Removes and returns the top PolyCalc
      */
-    public RatPoly pop() {
+    public PolyCalc pop() {
+        if (this.size() < 1) {
+            throw new IllegalArgumentException("size less than 1");
+        }
         checkRep();
-        RatPoly res = this.polys.pop();
-        checkRep();
-        return res;
+        return polyStack.pop();
     }
 
     /**
-     * Duplicates the top RatPoly on this.
-     *
-     * @spec.requires {@code this.size() > 0}
-     * @spec.modifies this
-     * @spec.effects If this = [p]:S then this_post = [p, p]:S
+     * Duplicates the top element on the RatPolyStack
      */
-    public void dup() {
+    public void duplicate() {
+        if (this.size() < 1) {
+            throw new IllegalArgumentException("size less than 1");
+        }
         checkRep();
-        RatPoly duplicate = this.pop();
-        // Pushes polynomial twice hence duplicating it
+        PolyCalc duplicate = this.pop();
+        // Pushes twice hence duplicating it
         this.push(duplicate);
         this.push(duplicate);
         checkRep();
     }
 
     /**
-     * Swaps the top two elements of this.
-     *
-     * @spec.requires {@code this.size() >= 2}
-     * @spec.modifies this
-     * @spec.effects If this = [p1, p2]:S then this_post = [p2, p1]:S
+     * Swaps the top two elements on the RatPolyStack
      */
     public void swap() {
         checkRep();
-        RatPoly first = this.pop();
-        RatPoly second = this.pop();
-        // Pushes in same order of popping to swap it because of LIFO policy
-        this.push(first);
-        this.push(second);
+        if (this.size() > 1) {
+            PolyCalc first = this.pop();
+            PolyCalc second = this.pop();
+            // LIFO property so pushes in same order of popping to swap it
+            this.push(first);
+            this.push(second);
+        }
         checkRep();
     }
 
     /**
-     * Clears the stack.
-     *
-     * @spec.modifies this
-     * @spec.effects this_post = []
+     * Clears all PolyCalcs from the RatPolyStack
      */
     public void clear() {
         checkRep();
-        this.polys.clear();
+        polyStack.clear();
         checkRep();
     }
 
     /**
-     * Returns the RatPoly that is 'index' elements from the top of the stack.
-     *
-     * @param index the index of the RatPoly to be retrieved
-     * @return if this = S:[p]:T where S.size() = index, then returns p.
-     * @spec.requires {@code index >= 0 && index < this.size()}
+     * Returns the RatPoly that is 'index' positions from the top of the RatPolyStack
      */
-    public RatPoly getNthFromTop(int index) {
+    public PolyCalc getNthFromTop(int index) {
         checkRep();
-        // Nth term from top is returned
-        return this.polys.get(this.size() - index - 1);
+        if (index <= this.size()) {
+            return polyStack.get(this.size() - index - 1);
+        } else {
+            return PolyCalc.ZERO;
+        }
     }
 
     /**
-     * Pops two elements off of the stack, adds them, and places the result on top of the stack.
-     *
-     * @spec.requires {@code this.size() >= 2}
-     * @spec.modifies this
-     * @spec.effects If this = [p1, p2]:S then this_post = [p3]:S where p3 = p1 + p2
+     * Adds the top two values of RatPolyStack and places the result on top of the stack.
      */
-    public void add() {
+    public void addition() {
         checkRep();
-        RatPoly first = this.pop();
-        RatPoly second = this.pop();
-        // First two polynomials added and pushed onto stack as one
-        this.push(second.add(first));
+        if (this.size() > 1) {
+            PolyCalc first = this.pop();
+            PolyCalc second = this.pop();
+            this.push(second.addition(first));
+        }
         checkRep();
     }
 
     /**
-     * Subtracts the top poly from the next from top poly, pops both off the stack, and places the
-     * result on top of the stack.
-     *
-     * @spec.requires {@code this.size() >= 2}
-     * @spec.modifies this
-     * @spec.effects If this = [p1, p2]:S then this_post = [p3]:S where p3 = p2 - p1
+     * Subtracts the top value from the next top of RatPolyStack and places the result on top of the stack.
      */
-    public void sub() {
+    public void subtraction() {
         checkRep();
-        RatPoly first = this.pop();
-        RatPoly second = this.pop();
-        // First two polynomials subtracted and pushed onto stack as one
-        this.push(second.sub(first));
+        if (this.size() > 1) {
+            PolyCalc first = this.pop();
+            PolyCalc second = this.pop();
+            this.push(second.subtract(first));
+        }
         checkRep();
     }
 
     /**
-     * Pops two elements off of the stack, multiplies them, and places the result on top of the stack.
-     *
-     * @spec.requires {@code this.size() >= 2}
-     * @spec.modifies this
-     * @spec.effects If this = [p1, p2]:S then this_post = [p3]:S where p3 = p1 * p2
+     * Multiplies the top value from the next top of RatPolyStack and places the result on top of the stack.
      */
-    public void mul() {
+    public void multiplication() {
         checkRep();
-        RatPoly first = this.pop();
-        RatPoly second = this.pop();
-        // First two polynomials multiplied and pushed onto stack as one
-        this.push(second.mul(first));
+        if (this.size() > 1) {
+            PolyCalc first = this.pop();
+            PolyCalc second = this.pop();
+            this.push(second.multiplication(first));
+        }
         checkRep();
 
     }
 
     /**
-     * Divides the next from top poly by the top poly, pops both off the stack, and places the result
-     * on top of the stack.
-     *
-     * @spec.requires {@code this.size() >= 2}
-     * @spec.modifies this
-     * @spec.effects If this = [p1, p2]:S then this_post = [p3]:S where p3 = p2 / p1
+     * Divides the top value from the next top of RatPolyStack and places the result on top of the stack.
      */
-    public void div() {
+    public void division() {
         checkRep();
-        RatPoly first = this.pop();
-        RatPoly second = this.pop();
-        // First two polynomials divided and pushed onto stack as one
-        this.push(second.div(first));
+        if (this.size() > 1) {
+            PolyCalc first = this.pop();
+            PolyCalc second = this.pop();
+            this.push(second.division(first));
+        }
         checkRep();
     }
 
-    /**
-     * Pops the top element off of the stack, differentiates it, and places the result on top of the
-     * stack.
-     *
-     * @spec.requires {@code this.size() >= 1}
-     * @spec.modifies this
-     * @spec.effects If this = [p1]:S then this_post = [p2]:S where p2 = derivative of p1
+     /**
+     * Differentiates the top value of RatPolyStack and places the result on top of the stack.
      */
     public void differentiate() {
         if (this.size() < 1) {
             throw new IllegalArgumentException("size less than 1");
         }
         checkRep();
-        RatPoly p = this.polys.pop().differentiate();
+        PolyCalc p = this.pop().differentiate();
+        this.push(p);
         checkRep();
-        this.polys.add(p);
     }
 
     /**
-     * Pops the top element off of the stack, integrates it, and places the result on top of the
-     * stack.
-     *
-     * @spec.requires {@code this.size() >= 1}
-     * @spec.modifies this
-     * @spec.effects If this = [p1]:S then this_post = [p2]:S where p2 = indefinite integral of p1
-     * with integration constant 0
+     * Integrates the top value of RatPolyStack and places the result on top of the stack.
      */
     public void integrate() {
         if (this.size() < 1) {
             throw new IllegalArgumentException("size less than 1");
         }
         checkRep();
-        RatPoly p = this.polys.pop().antiDifferentiate(RatNum.ZERO);
+        PolyCalc p = this.pop().antiDifferentiate(NumIndiv.ZERO);
+        this.push(p);
         checkRep();
-        this.polys.add(p);
     }
 
     /**
@@ -265,6 +205,6 @@ public final class PolyCalcStack implements Iterable<PolyCalc> {
      */
     @Override
     public Iterator<PolyCalc> iterator() {
-        return polys.iterator();
+        return polyStack.iterator();
     }
 }
